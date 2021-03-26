@@ -1,4 +1,4 @@
-package main
+package ffgui
 
 import (
 	"bufio"
@@ -9,7 +9,7 @@ import (
 )
 
 // пауза
-func keyWait() {
+func KeyWait() {
 	fmt.Printf("Press 'Enter' to continue...")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }

@@ -1,4 +1,4 @@
-package main
+package ffgui
 
 import (
 	"fmt"
@@ -225,7 +225,7 @@ func makeContainerTree(i *Input_widget) *fyne.Container {
 	return all_container
 }
 
-func gui(aset *Settings, adata *Data) {
+func Gui(aset *Settings, adata *Data) {
 	the_app := app.New()
 	app_window = the_app.NewWindow("Notepad")
 	app_window.Resize(fyne.NewSize(1000, 500))

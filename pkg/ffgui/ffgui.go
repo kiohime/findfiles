@@ -1,4 +1,4 @@
-package main
+package ffgui
 
 import (
 	"fmt"
@@ -43,7 +43,7 @@ type Settings struct {
 }
 
 // блок инициализации: установка рабочего пути для файлов базы и поиска
-func initialize(aset *Settings) error {
+func Initialize(aset *Settings) error {
 	fmt.Println("### initialize")
 
 	aset.BaseNameFiles = "filesearch_files.txt"
@@ -284,14 +284,14 @@ func assert(args ...interface{}) {
 	}
 }
 
-func main() {
-	AppSet = &Settings{}
-	AppData = &Data{}
-	err := initialize(AppSet)
-	if err != nil {
-		fmt.Printf("Error in initialisation : %q\n", err)
-		keyWait()
-		os.Exit(1)
-	}
-	gui(AppSet, AppData)
-}
+// func main() {
+// 	AppSet = &Settings{}
+// 	AppData = &Data{}
+// 	err := Initialize(AppSet)
+// 	if err != nil {
+// 		fmt.Printf("Error in initialisation : %q\n", err)
+// 		KeyWait()
+// 		os.Exit(1)
+// 	}
+// 	Gui(AppSet, AppData)
+// }

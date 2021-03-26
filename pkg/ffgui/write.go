@@ -1,11 +1,11 @@
-package main
+package ffgui
 
 import (
 	"errors"
 	"fmt"
 	"os"
 
-	walk "github.com/kiohime/findfiles"
+	"github.com/kiohime/findfiles/pkg/walk"
 )
 
 // ////////////////////////////////////////////////
