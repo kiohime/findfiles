@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	walk "github.com/kiohime/lesson/filefind"
+	walk "github.com/kiohime/findfiles"
 )
 
 // ////////////////////////////////////////////////
