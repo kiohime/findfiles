@@ -18,6 +18,12 @@ func keyWait() {
 // ТУТ ПРЕСЕТЫ ДЛЯ КЛАВИАТУРЫ
 func (e *modifiedEntry) TypedKey(key *fyne.KeyEvent) {
 	switch key.Name {
+	// case fyne.Key1:
+	// 	on1()
+	// case fyne.Key2:
+	// 	on2()
+	// case fyne.Key3:
+	// 	on3()
 	case fyne.KeyEscape:
 		e.onEsc()
 	case fyne.KeyEnter, fyne.KeyReturn:

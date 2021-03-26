@@ -159,14 +159,14 @@ func executer(aset *Settings, adata *Data) string {
 				rb, rError = readBaser(aset, adata.InputData)
 				readBase = append(readBase, rb...)
 
-				fmt.Printf("%v\t%v\n", i, rb)
+				// fmt.Printf("%v\t%v\n", i, rb)
 				if rError != nil {
 					readErrors = append(readErrors, rError)
 					aset.ScanMode = 2
 					return ""
 				}
 			}
-			fmt.Println("**************", readBase)
+			// fmt.Println("**************", readBase)
 			aset.ScanMode = 2
 
 		// ...нужны или каталоги, или файлы отдельно

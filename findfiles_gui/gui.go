@@ -43,11 +43,23 @@ func (e *modifiedEntry) onEnter(aset *Settings, adata *Data) {
 	mainDecider(e.input.Entry, screen_widget, aset, adata)
 }
 
+// func on1() {
+// 	AppSet.ScanMode = 0
+// }
+// func on2() {
+// 	AppSet.ScanMode = 1
+// }
+
+// func on3() {
+// 	AppSet.ScanMode = 2
+// 	fmt.Println("111")
+// }
+
 func (e *modifiedEntry) setInput(input *Input_widget) {
 	e.input = input
 }
 
-// /////////////////////////////////////////////////////////////
+// ///////////////////////////////////////////////////////////
 type modifiedSelect struct {
 	widget.Select
 	settings *Input_widget
@@ -59,23 +71,44 @@ func newModifiedSelect() *modifiedSelect {
 	return selEntry
 }
 
-func (s *modifiedSelect) setSettings(settings *Input_widget) {
+// func (s *modifiedSelect) setSelSettings(settings *Input_widget) {
+// 	assert(s)
+// 	s.settings = settings
+// }
+
+func newSelect() *modifiedSelect {
+	s := newModifiedSelect()
+	return s
+}
+
+// /////////////////////////////////////////////////////////////
+type modifiedRadio struct {
+	widget.RadioGroup
+	settings *Input_widget
+}
+
+func newModifiedRadio() *modifiedRadio {
+	radEntry := &modifiedRadio{}
+	radEntry.ExtendBaseWidget(radEntry)
+	return radEntry
+}
+
+func (s *modifiedRadio) setRadSettings(settings *Input_widget) {
 	assert(s)
 	s.settings = settings
 }
 
-func newSelect() *modifiedSelect {
-	s := newModifiedSelect()
-
+func newRadio() *modifiedRadio {
+	s := newModifiedRadio()
 	return s
 }
 
 // //////////////////////////////////////////////////////////////////
 
-func newSettings(m *widget.RadioGroup) *modifiedSelect {
-	check := newSelect()
-	t := []string{"каталоги", "файлы", "И ТО, И ДРУГОЕ"}
-	check.Options = t
+func newSettingsWidget() *modifiedRadio {
+	check := newRadio()
+	set := []string{"каталоги", "файлы", "И ТО, И ДРУГОЕ"}
+	check.Options = set
 	check.OnChanged = settingsChanged
 	// check.Disable()
 	return check
@@ -94,36 +127,55 @@ func settingsChanged(c string) {
 	}
 	fmt.Printf("on settingChanged ScanMode is %v\n", AppSet.ScanMode)
 	fmt.Printf("on settingChanged TargetFileName is %v\n", AppSet.TargetFileName)
+}
 
+// ////////////////////////////////////////////////////////////////////
+
+// // oldModeWidget
+// func oldModeWidget(aset *Settings) *widget.RadioGroup {
+// 	s := widget.NewRadioGroup([]string{"Поиск", "Сканирование"}, func(s string) {
+// 		switch s {
+// 		case "Поиск":
+// 			aset.AppMode = 0
+// 		case "Сканирование":
+// 			aset.AppMode = 1
+// 		}
+// 		fmt.Printf("set AppMode %v\n", aset.AppMode)
+// 	})
+// 	s.SetSelected("Поиск")
+// 	s.Refresh()
+// 	return s
+// }
+
+func newModeWidget() *modifiedSelect {
+	mode := newSelect()
+	md := []string{"Поиск", "Сканирование"}
+	mode.Options = md
+	mode.OnChanged = modeChanged
+	return mode
+}
+
+func modeChanged(m string) {
+	switch m {
+	case "Поиск":
+		AppSet.AppMode = 0
+	case "Сканирование":
+		AppSet.AppMode = 1
+	}
+	fmt.Printf("on settingChanged AppMode is %v\n", AppSet.AppMode)
 }
 
 // ////////////////////////////////////////////////////////////////////////
 type Input_widget struct {
-	Mode   *widget.RadioGroup
+	Mode   *modifiedSelect
 	Entry  *modifiedEntry
 	Form   *widget.Form
-	Option *modifiedSelect
+	Option *modifiedRadio
 }
 
-func newInputWidget(m *widget.RadioGroup, e *modifiedEntry, f *widget.Form, s *modifiedSelect) *Input_widget {
+func newInputWidget(m *modifiedSelect, e *modifiedEntry, f *widget.Form, s *modifiedRadio) *Input_widget {
 	assert(m, e, f, s)
 	return &Input_widget{Mode: m, Entry: e, Form: f, Option: s}
-}
-
-// newModeWidget
-func newModeWidget(aset *Settings) *widget.RadioGroup {
-	s := widget.NewRadioGroup([]string{"Поиск", "Сканирование"}, func(s string) {
-		switch s {
-		case "Поиск":
-			aset.AppMode = 0
-		case "Сканирование":
-			aset.AppMode = 1
-		}
-		fmt.Printf("set AppMode %v\n", aset.AppMode)
-	})
-	s.SetSelected("Поиск")
-	s.Refresh()
-	return s
 }
 
 // //////////////////////////////////////////////////////////////////
@@ -182,16 +234,18 @@ func gui(aset *Settings, adata *Data) {
 	progressBar.Hide()
 
 	screen_widget = widget.NewLabel("")
-	mode_widget := newModeWidget(aset)
+	mode_widget := newModeWidget()
+	mode_widget.Selected = "Поиск"
+	mode_widget.OnChanged("Поиск")
 	entry_widget := newEntry()
 	form_widget := newForm(entry_widget, screen_widget, aset, adata)
-	settings_widget := newSettings(mode_widget)
+	settings_widget := newSettingsWidget()
 	settings_widget.Selected = "каталоги"
 	settings_widget.OnChanged("каталоги")
-
 	input_widget := newInputWidget(mode_widget, entry_widget, form_widget, settings_widget)
 	entry_widget.setInput(input_widget)
-	settings_widget.setSettings(input_widget)
+	// mode_widget.setSelSettings(input_widget)
+	// settings_widget.setRadSettings(input_widget)
 
 	tree_container := makeContainerTree(input_widget)
 
