@@ -128,7 +128,7 @@ type FyneString struct {
 	// pos      *[]int
 }
 
-func (o *FyneString) renderString(rPos fyne.Position) fyne.CanvasObject {
+func (o *FyneString) renderString(rPos fyne.Position) *fyne.Container {
 	const kerning = -1
 
 	res := fyne.NewContainer()
@@ -145,7 +145,7 @@ func (o *FyneString) renderString(rPos fyne.Position) fyne.CanvasObject {
 	return res
 }
 
-func Render(inData []string, pat string) fyne.CanvasObject {
+func Render(inData []string, pat string) *fyne.Container {
 	const leading = -3
 
 	result := fyne.NewContainer()

@@ -177,6 +177,7 @@ func newForm(i *modifiedEntry, aset *Settings, adata *Data) *widget.Form {
 }
 
 func makeContainerTree(i *Input_widget, scr *widget.Label) *fyne.Container {
+
 	screen_container := container.NewWithoutLayout(scr)
 	screen_scroll_container := container.NewScroll(screen_container)
 	mode_settings_container := container.NewVBox(
