@@ -38,7 +38,6 @@ func (e *modifiedEntry) onEsc() {
 func (e *modifiedEntry) onEnter(aset *Settings, adata *Data) {
 	assert(e)
 	assert(e.input)
-	// findBtn(input_widget.Entry, screen_widget)
 	fmt.Printf("on onEnter AppMode is %v\n", aset.AppMode)
 	mainDecider(e.input.Entry, screen_widget, aset, adata)
 }
@@ -131,22 +130,6 @@ func settingsChanged(c string) {
 
 // ////////////////////////////////////////////////////////////////////
 
-// // oldModeWidget
-// func oldModeWidget(aset *Settings) *widget.RadioGroup {
-// 	s := widget.NewRadioGroup([]string{"Поиск", "Сканирование"}, func(s string) {
-// 		switch s {
-// 		case "Поиск":
-// 			aset.AppMode = 0
-// 		case "Сканирование":
-// 			aset.AppMode = 1
-// 		}
-// 		fmt.Printf("set AppMode %v\n", aset.AppMode)
-// 	})
-// 	s.SetSelected("Поиск")
-// 	s.Refresh()
-// 	return s
-// }
-
 func newModeWidget() *modifiedSelect {
 	mode := newSelect()
 	md := []string{"Поиск", "Сканирование"}
@@ -180,16 +163,14 @@ func newInputWidget(m *modifiedSelect, e *modifiedEntry, f *widget.Form, s *modi
 
 // //////////////////////////////////////////////////////////////////
 
-func newForm(i *modifiedEntry, s *widget.Label, aset *Settings, adata *Data) *widget.Form {
-	assert(i, s)
+func newForm(i *modifiedEntry, aset *Settings, adata *Data) *widget.Form {
+	assert(i)
 	form := &widget.Form{
 		Items: []*widget.FormItem{
 			{Text: "Data", Widget: i, HintText: "input data"},
 		},
 		OnCancel: nil,
 		OnSubmit: func() { i.onEnter(aset, adata) },
-
-		// OnSubmit: findBtn(i, s),
 	}
 	i.Validator = validation.NewRegexp(`.+`, "input smthing")
 	return form
@@ -238,7 +219,7 @@ func Gui(aset *Settings, adata *Data) {
 	mode_widget.Selected = "Поиск"
 	mode_widget.OnChanged("Поиск")
 	entry_widget := newEntry()
-	form_widget := newForm(entry_widget, screen_widget, aset, adata)
+	form_widget := newForm(entry_widget, aset, adata)
 	settings_widget := newSettingsWidget()
 	settings_widget.Selected = "каталоги"
 	settings_widget.OnChanged("каталоги")

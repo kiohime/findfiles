@@ -110,19 +110,8 @@ func mainDecider(input *modifiedEntry, scr *widget.Label, aset *Settings, adata 
 	progressBar.Show()
 	adata.InputData = nil
 	result := ""
-
-	// switch aset.AppMode {
-	// case 0:
-	// 	adata.InputData = append(adata.InputData, input.Text)
-	// case 1:
-	// 	aset.RootDir = input.Text
-	// }
-
 	adata.InputData = append(adata.InputData, input.Text)
-
 	result = executer(aset, adata)
-	// assert(result)
-	// dataBox.Add(widget.NewLabel(result))
 	scr.Text = result
 	input.Text = ""
 	input.Refresh()
