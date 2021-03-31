@@ -176,8 +176,8 @@ func newForm(i *modifiedEntry, aset *Settings, adata *Data) *widget.Form {
 	return form
 }
 
-func makeContainerTree(i *Input_widget) *fyne.Container {
-	screen_container := container.NewWithoutLayout(screen_widget)
+func makeContainerTree(i *Input_widget, scr *widget.Label) *fyne.Container {
+	screen_container := container.NewWithoutLayout(scr)
 	screen_scroll_container := container.NewScroll(screen_container)
 	mode_settings_container := container.NewVBox(
 		i.Mode,
@@ -228,7 +228,7 @@ func Gui(aset *Settings, adata *Data) {
 	// mode_widget.setSelSettings(input_widget)
 	// settings_widget.setRadSettings(input_widget)
 
-	tree_container := makeContainerTree(input_widget)
+	tree_container := makeContainerTree(input_widget, screen_widget)
 
 	app_window.SetContent(tree_container)
 	app_window.ShowAndRun()
