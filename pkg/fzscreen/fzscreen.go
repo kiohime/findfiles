@@ -3,23 +3,30 @@ package fzscreen
 import (
 	"fmt"
 	"image/color"
+	"sort"
 	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/widget"
 	"github.com/junegunn/fzf/src/algo"
 	"github.com/junegunn/fzf/src/util"
 )
 
-func findPos(input string, pattern string) *[]int {
+func findPos(input string, pattern string) Result {
 
 	caseSensitive := false
 	forward := true
 	normalize := forward
 	chars := util.ToChars([]byte(input))
 
-	_, pos := algo.FuzzyMatchV2(caseSensitive, normalize, forward, &chars, []rune(pattern), true, nil)
-	return pos
+	res, pos := algo.FuzzyMatchV2(caseSensitive, normalize, forward, &chars, []rune(pattern), true, nil)
+	return Result{res.Score, pos}
+}
+
+type Result struct {
+	Score int
+	Pos   *[]int
 }
 
 func SetColor(s string) color.RGBA {
@@ -145,21 +152,47 @@ func (o *FyneString) renderString(rPos fyne.Position) *fyne.Container {
 	return res
 }
 
+type FzScreenWidget struct {
+	Entry  *widget.Entry
+	Screen *fyne.Container
+}
+
+func (c *FzScreenWidget) Update(s []string) {
+	c.Screen.Objects = nil
+	pattern := c.Entry.Text
+	result := Render(s, pattern)
+	for _, obj := range result.Objects {
+		c.Screen.Objects = append(c.Screen.Objects, obj)
+	}
+}
+
 func Render(inData []string, pat string) *fyne.Container {
 	const leading = -3
+	type item struct {
+		str   string
+		score int
+		pos   *[]int
+	}
+	var items []item
 
 	result := fyne.NewContainer()
 	resX := result.Position().X
 	resY := result.Position().Y
 	for _, in := range inData {
-		strPos := findPos(in, pat)
-		if strPos == nil {
+		res := findPos(in, pat)
+		if res.Pos == nil {
 			continue
 		}
+		items = append(items, item{str: in, score: res.Score, pos: res.Pos})
+	}
+
+	sort.Slice(items, func(i, j int) bool { return items[i].score > items[j].score })
+
+	for _, in := range items {
 		// fyne.MeasureText(s)
-		strData := NewFyneString(in, strPos)
+		strData := NewFyneString(in.str, in.pos)
 		sample := strData.segments[0]
-		off := fyne.MeasureText(in, sample.TextSize, sample.TextStyle)
+		off := fyne.MeasureText(in.str, sample.TextSize, sample.TextStyle)
 		result.Objects = append(result.Objects, strData.renderString(result.Position()))
 		resY = off.Height + resY + leading
 
