@@ -8,7 +8,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/widget"
 	"github.com/junegunn/fzf/src/algo"
 	"github.com/junegunn/fzf/src/util"
 )
@@ -150,20 +149,6 @@ func (o *FyneString) renderString(rPos fyne.Position) *fyne.Container {
 		nextOff = off
 	}
 	return res
-}
-
-type FzScreenWidget struct {
-	Entry  *widget.Entry
-	Screen *fyne.Container
-}
-
-func (c *FzScreenWidget) Update(s []string) {
-	c.Screen.Objects = nil
-	pattern := c.Entry.Text
-	result := Render(s, pattern)
-	for _, obj := range result.Objects {
-		c.Screen.Objects = append(c.Screen.Objects, obj)
-	}
 }
 
 func Render(inData []string, pat string) *fyne.Container {

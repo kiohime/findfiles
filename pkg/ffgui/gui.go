@@ -39,7 +39,7 @@ func (e *modifiedEntry) onEnter(aset *Settings, adata *Data) {
 	assert(e)
 	assert(e.input)
 	fmt.Printf("on onEnter AppMode is %v\n", aset.AppMode)
-	mainDecider(e.input.Entry, screen_widget, aset, adata)
+	mainDecider(e.input.Entry, global_screen_container, aset, adata)
 }
 
 // func on1() {
@@ -176,10 +176,10 @@ func newForm(i *modifiedEntry, aset *Settings, adata *Data) *widget.Form {
 	return form
 }
 
-func makeContainerTree(i *Input_widget, scr *widget.Label) *fyne.Container {
+func makeContainerTree(i *Input_widget, scr *fyne.Container) *fyne.Container {
 
-	screen_container := container.NewWithoutLayout(scr)
-	screen_scroll_container := container.NewScroll(screen_container)
+	// screen_container := container.NewWithoutLayout(scr)
+	screen_scroll_container := container.NewScroll(scr)
 	mode_settings_container := container.NewVBox(
 		i.Mode,
 		widget.NewSeparator(),
@@ -215,7 +215,7 @@ func Gui(aset *Settings, adata *Data) {
 	progressBar = widget.NewProgressBarInfinite()
 	progressBar.Hide()
 
-	screen_widget = widget.NewLabel("")
+	global_screen_container = fyne.NewContainer()
 	mode_widget := newModeWidget()
 	mode_widget.Selected = "Поиск"
 	mode_widget.OnChanged("Поиск")
@@ -229,7 +229,7 @@ func Gui(aset *Settings, adata *Data) {
 	// mode_widget.setSelSettings(input_widget)
 	// settings_widget.setRadSettings(input_widget)
 
-	tree_container := makeContainerTree(input_widget, screen_widget)
+	tree_container := makeContainerTree(input_widget, global_screen_container)
 
 	app_window.SetContent(tree_container)
 	app_window.ShowAndRun()

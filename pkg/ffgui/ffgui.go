@@ -8,13 +8,15 @@ import (
 	"runtime"
 	"strings"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
+	"github.com/kiohime/findfiles/pkg/fzscreen"
 )
 
 var (
-	progressBar   *widget.ProgressBarInfinite
-	entry_widget  *modifiedEntry
-	screen_widget *widget.Label
+	progressBar             *widget.ProgressBarInfinite
+	entry_widget            *modifiedEntry
+	global_screen_container *fyne.Container
 )
 
 // //////////////////////////////////////////////////////////////////////
@@ -101,18 +103,41 @@ func printFile(pathname string) *[]string {
 	return &p
 }
 
+type fzScreenWidget struct {
+	Entry  *widget.Entry
+	Screen *fyne.Container
+}
+
+func (c *fzScreenWidget) Update(s []string) {
+	global_screen_container.Objects = nil
+	pattern := c.Entry.Text
+	result := fzscreen.Render(s, pattern)
+	for _, obj := range result.Objects {
+		global_screen_container.Objects = append(global_screen_container.Objects, obj)
+	}
+}
+
 // mainDecider - executes searching mode, depending on switch
-func mainDecider(input *modifiedEntry, scr *widget.Label, aset *Settings, adata *Data) {
+func mainDecider(input *modifiedEntry, scr *fyne.Container, aset *Settings, adata *Data) {
 	assert(input, scr)
 	fmt.Printf("on decider AppMode is %v\n", aset.AppMode)
 
 	progressBar.Start()
 	progressBar.Show()
 	adata.InputData = nil
-	result := ""
 	adata.InputData = append(adata.InputData, input.Text)
-	result = executer(aset, adata)
-	scr.Text = result
+	resultData := executer(aset, adata)
+	resultScreen := fyne.NewContainer()
+
+	texter := &fzScreenWidget{
+		Entry:  &input.Entry,
+		Screen: resultScreen,
+	}
+	input.Entry.OnCursorChanged = func() { texter.Update(resultData) }
+
+	// newScr :=
+
+	// scr.Text = result
 	input.Text = ""
 	input.Refresh()
 	progressBar.Hide()
@@ -120,8 +145,8 @@ func mainDecider(input *modifiedEntry, scr *widget.Label, aset *Settings, adata 
 }
 
 //executer - запускает программу в устновленном режиме
-func executer(aset *Settings, adata *Data) string {
-	result := ""
+func executer(aset *Settings, adata *Data) []string {
+	result := []string{}
 	allErrs := []error{}
 	fmt.Printf("on executer AppMode is %v\n", aset.AppMode)
 	switch aset.AppMode {
@@ -152,7 +177,7 @@ func executer(aset *Settings, adata *Data) string {
 				if rError != nil {
 					readErrors = append(readErrors, rError)
 					aset.ScanMode = 2
-					return ""
+					return nil
 				}
 			}
 			// fmt.Println("**************", readBase)
@@ -165,12 +190,13 @@ func executer(aset *Settings, adata *Data) string {
 			readBase, rError = readBaser(aset, adata.InputData)
 			if rError != nil {
 				readErrors = append(readErrors, rError)
-				return ""
+				return nil
 			}
 		}
 
 		// составляем строку из массива данных для вывода в экран гуи
-		result = strings.Join(readBase, "\n")
+		// result = strings.Join(readBase, "\n")
+		result = readBase
 
 	// /////////////////////////////////////
 	// режим сканирования пути...
@@ -195,7 +221,7 @@ func executer(aset *Settings, adata *Data) string {
 				if wError != nil {
 					writeErrors = append(writeErrors, wError)
 					aset.ScanMode = 2
-					return ""
+					return nil
 				}
 				// создаем файл результат
 				// если возникла ошибка при создании файла результата сканирования, добавляем ошибку в массив ошибок сканирования пути
@@ -215,7 +241,7 @@ func executer(aset *Settings, adata *Data) string {
 			writeBase, wError = writeBaser(aset, adata.InputData)
 			if wError != nil {
 				writeErrors = append(writeErrors, wError)
-				return ""
+				return nil
 			}
 			// создаем файл результат
 			// если возникла ошибка при создании файла результата сканирования, добавляем ошибку в массив ошибок сканирования пути
